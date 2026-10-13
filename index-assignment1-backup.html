@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Discover extraordinary destinations and thoughtfully curated travel experiences with Wanderly.">
+  <title>Wanderly | Explore the World</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="navbar container" aria-label="Main navigation">
+      <a class="logo" href="#home" aria-label="Wanderly home">wanderly<span>.</span></a>
+
+      <div class="nav-links">
+        <a href="#home">Home</a>
+        <a href="#tours">Destinations</a>
+        <a href="#reviews">Reviews</a>
+      </div>
+
+      <a class="button button-small nav-cta" href="#plan">Plan your trip <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero container" id="home" aria-labelledby="hero-title">
+      <div class="hero-content">
+        <p class="eyebrow"><span class="eyebrow-line"></span> YOUR NEXT ADVENTURE STARTS HERE</p>
+        <h1 id="hero-title">The world is waiting <span>for you.</span></h1>
+        <p class="hero-description">
+          Discover extraordinary destinations, experience new cultures
+          and create memories that last a lifetime.
+        </p>
+        <a href="#tours" class="button">Explore our tours <span aria-hidden="true">↗</span></a>
+
+        <div class="hero-note">
+          <span class="status-dot" aria-hidden="true"></span>
+          Curated journeys. Unforgettable memories.
+        </div>
+      </div>
+
+      <div class="hero-image" aria-label="Featured travel destinations">
+        <div class="hero-slides">
+          <article class="hero-slide active" aria-hidden="false">
+            <img
+              src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=1400&q=85"
+              alt="Lush tropical landscape and coastline in Bali, Indonesia"
+              fetchpriority="high">
+            <div class="image-caption">
+              <span>FEATURED DESTINATION</span>
+              <strong>Bali, Indonesia</strong>
+            </div>
+            <span class="image-number">01 <span>/ 04</span></span>
+          </article>
+
+          <article class="hero-slide" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1400&q=85"
+              alt="Snow-covered mountain peaks beneath a starry sky">
+            <div class="image-caption">
+              <span>ADVENTURE AWAITS</span>
+              <strong>Swiss Alps</strong>
+            </div>
+            <span class="image-number">02 <span>/ 04</span></span>
+          </article>
+
+          <article class="hero-slide" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=1400&q=85"
+              alt="Wide African landscape with wildlife in Kenya">
+            <div class="image-caption">
+              <span>WILD &amp; BEAUTIFUL</span>
+              <strong>Kenya, Africa</strong>
+            </div>
+            <span class="image-number">03 <span>/ 04</span></span>
+          </article>
+
+          <article class="hero-slide" aria-hidden="true">
+            <img
+              src="https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=1400&q=85"
+              alt="Turquoise water surrounding a tropical island in the Maldives">
+            <div class="image-caption">
+              <span>PARADISE FOUND</span>
+              <strong>Maldives</strong>
+            </div>
+            <span class="image-number">04 <span>/ 04</span></span>
+          </article>
+        </div>
+
+        <button class="slider-arrow slider-prev" type="button" aria-label="Previous destination">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button class="slider-arrow slider-next" type="button" aria-label="Next destination">
+          <span aria-hidden="true">→</span>
+        </button>
+
+        <div class="slider-controls" aria-label="Choose a destination">
+          <button class="slider-dot active" type="button" aria-label="Show Bali" aria-pressed="true"></button>
+          <button class="slider-dot" type="button" aria-label="Show Swiss Alps" aria-pressed="false"></button>
+          <button class="slider-dot" type="button" aria-label="Show Kenya" aria-pressed="false"></button>
+          <button class="slider-dot" type="button" aria-label="Show Maldives" aria-pressed="false"></button>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro-strip container" aria-label="Our travel approach">
+      <p><span>01</span> Thoughtfully curated trips</p>
+      <p><span>02</span> Local experiences</p>
+      <p><span>03</span> Memories that stay</p>
+    </section>
+
+    <section class="tours section-space" id="tours" aria-labelledby="tours-title">
+      <div class="container">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">FIND YOUR NEXT ESCAPE</p>
+            <h2 id="tours-title">Journeys worth taking<span>.</span></h2>
+          </div>
+          <p class="section-description">From slow island mornings to big wild adventures, find a trip that feels like you.</p>
+        </div>
+
+        <div class="tour-grid">
+          <article class="tour-card">
+            <a class="tour-image" href="#plan" aria-label="Ask us about the Bali escape">
+              <img src="https://images.unsplash.com/photo-1537996194471-e657df975ab4?auto=format&fit=crop&w=900&q=80" alt="Green tropical cliffs and blue ocean in Bali" loading="lazy">
+              <span class="tour-tag">ISLAND ESCAPE</span>
+            </a>
+            <div class="tour-info">
+              <div class="tour-location"><span aria-hidden="true">↗</span> Indonesia</div>
+              <h3>Bali, beyond the ordinary</h3>
+              <p>Temple visits, lush rice terraces and days beside the sea.</p>
+              <div class="tour-meta"><span>7 days</span><strong>From R12,500</strong></div>
+            </div>
+          </article>
+
+          <article class="tour-card">
+            <a class="tour-image" href="#plan" aria-label="Ask us about the Swiss Alps adventure">
+              <img src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=900&q=80" alt="Dramatic mountain scenery beneath a clear sky" loading="lazy">
+              <span class="tour-tag">MOUNTAIN RETREAT</span>
+            </a>
+            <div class="tour-info">
+              <div class="tour-location"><span aria-hidden="true">↗</span> Switzerland</div>
+              <h3>The Swiss Alpine escape</h3>
+              <p>Fresh mountain air, scenic train rides and quiet villages.</p>
+              <div class="tour-meta"><span>6 days</span><strong>From R18,900</strong></div>
+            </div>
+          </article>
+
+          <article class="tour-card">
+            <a class="tour-image" href="#plan" aria-label="Ask us about the Kenya safari">
+              <img src="https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?auto=format&fit=crop&w=900&q=80" alt="Expansive African savannah landscape" loading="lazy">
+              <span class="tour-tag">WILDLIFE JOURNEY</span>
+            </a>
+            <div class="tour-info">
+              <div class="tour-location"><span aria-hidden="true">↗</span> Kenya</div>
+              <h3>Into the wild</h3>
+              <p>Open savannahs, unforgettable wildlife and golden sunsets.</p>
+              <div class="tour-meta"><span>5 days</span><strong>From R15,750</strong></div>
+            </div>
+          </article>
+        </div>
+        <p class="pricing-note">Prices shown are illustrative starting prices for this demo website and should be confirmed before booking.</p>
+      </div>
+    </section>
+
+    <section class="reviews section-space" id="reviews" aria-labelledby="reviews-title">
+      <div class="container reviews-layout">
+        <div class="reviews-intro">
+          <p class="eyebrow">KIND WORDS FROM TRAVELLERS</p>
+          <h2 id="reviews-title">The best stories are the ones you bring home<span>.</span></h2>
+          <p>Every journey should leave you with a little more wonder than you started with.</p>
+        </div>
+
+        <div class="review-grid">
+          <figure class="review-card">
+            <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>“Every detail felt considered. We came home with memories we'll be talking about for years.”</blockquote>
+            <figcaption><span class="avatar">TM</span><span><strong>Thandi M.</strong><small>Bali traveller</small></span></figcaption>
+          </figure>
+          <figure class="review-card">
+            <div class="review-stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <blockquote>“The perfect balance of adventure and time to slow down. I would happily plan another trip with Wanderly.”</blockquote>
+            <figcaption><span class="avatar avatar-two">JK</span><span><strong>Jordan K.</strong><small>Adventure traveller</small></span></figcaption>
+          </figure>
+        </div>
+        <p class="demo-note">Sample testimonials for design demonstration — replace these with genuine customer reviews before publishing.</p>
+      </div>
+    </section>
+
+    <section class="plan-section" id="plan" aria-labelledby="plan-title">
+      <div class="container plan-content">
+        <p class="eyebrow">YOUR STORY STARTS HERE</p>
+        <h2 id="plan-title">Where will the world take you<span>?</span></h2>
+        <p>Tell us what inspires you. Let's start planning a journey that feels unmistakably yours.</p>
+        <a class="button button-light" href="mailto:hello@example.com?subject=Plan%20my%20trip">Plan your trip <span aria-hidden="true">↗</span></a>
+        <small>Demo contact: replace hello@example.com with the agency's real email address.</small>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-content">
+      <a class="logo footer-logo" href="#home">wanderly<span>.</span></a>
+      <p>Go further. Feel more. Come home changed.</p>
+      <a href="#home" class="back-top">Back to top ↑</a>
+    </div>
+    <div class="container footer-bottom">
+      <span>© <span id="year">2026</span> Wanderly Travel. Demo concept.</span>
+      <span>Made for curious travellers.</span>
+    </div>
+  </footer>
+
+  <script>
+    (() => {
+      const slider = document.querySelector(".hero-image");
+      const slides = Array.from(document.querySelectorAll(".hero-slide"));
+      const dots = Array.from(document.querySelectorAll(".slider-dot"));
+      const previousButton = document.querySelector(".slider-prev");
+      const nextButton = document.querySelector(".slider-next");
+      const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (!slider || slides.length === 0 || dots.length !== slides.length || !previousButton || !nextButton) {
+        return;
+      }
+
+      let currentSlide = 0;
+      let slideTimer = null;
+
+      function showSlide(index) {
+        currentSlide = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, slideIndex) => {
+          const active = slideIndex === currentSlide;
+          slide.classList.toggle("active", active);
+          slide.setAttribute("aria-hidden", String(!active));
+        });
+
+        dots.forEach((dot, dotIndex) => {
+          const active = dotIndex === currentSlide;
+          dot.classList.toggle("active", active);
+          dot.setAttribute("aria-pressed", String(active));
+        });
+      }
+
+      function stopSlider() {
+        if (slideTimer !== null) {
+          window.clearInterval(slideTimer);
+          slideTimer = null;
+        }
+      }
+
+      function startSlider() {
+        stopSlider();
+        if (!reducedMotion) {
+          slideTimer = window.setInterval(() => showSlide(currentSlide + 1), 5000);
+        }
+      }
+
+      previousButton.addEventListener("click", () => {
+        showSlide(currentSlide - 1);
+        startSlider();
+      });
+
+      nextButton.addEventListener("click", () => {
+        showSlide(currentSlide + 1);
+        startSlider();
+      });
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          showSlide(index);
+          startSlider();
+        });
+      });
+
+      slider.addEventListener("mouseenter", stopSlider);
+      slider.addEventListener("mouseleave", startSlider);
+      slider.addEventListener("focusin", stopSlider);
+      slider.addEventListener("focusout", startSlider);
+
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) {
+          stopSlider();
+        } else {
+          startSlider();
+        }
+      });
+
+      showSlide(0);
+      startSlider();
+
+      const yearElement = document.getElementById("year");
+      if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+      }
+    })();
+  </script>
+</body>
+</html>
