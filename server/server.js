@@ -10,27 +10,42 @@ const pgSession = require('connect-pg-simple')(session);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const isProduction = process.env.NODE_ENV === 'production';
 
-// Database connection
+// Trust Render's HTTPS reverse proxy
+if (isProduction) {
+  app.set('trust proxy', 1);
+}
+
+// Check required environment variables
 if (!process.env.DATABASE_URL || !process.env.SESSION_SECRET) {
-  console.error('Missing DATABASE_URL or SESSION_SECRET in .env');
+  console.error('Missing DATABASE_URL or SESSION_SECRET.');
   process.exit(1);
 }
 
+// PostgreSQL database connection
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: true }
+  ssl: {
+    rejectUnauthorized: true
+  }
 });
+
+// Allowed frontend origins
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.FRONTEND_URL
+].filter(Boolean);
 
 // Middleware
 app.use(cors({
-  origin: 'http://localhost:5173',
+  origin: allowedOrigins,
   credentials: true
 }));
 
 app.use(express.json());
 
-// Sessions stored in PostgreSQL
+// PostgreSQL-backed sessions
 app.use(session({
   store: new pgSession({
     pool,
@@ -42,13 +57,13 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
     maxAge: 1000 * 60 * 60 * 24
   }
 }));
 
-// API status
+// API health check
 app.get('/api', (req, res) => {
   res.json({
     status: 'success',
@@ -56,7 +71,29 @@ app.get('/api', (req, res) => {
   });
 });
 
-// Get destinations
+// Database connection test
+app.get('/api/db-test', async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT NOW() AS database_time'
+    );
+
+    return res.json({
+      status: 'success',
+      message: 'Successfully connected to the Wanderly database!',
+      databaseTime: result.rows[0].database_time
+    });
+  } catch (error) {
+    console.error('Database error:', error.message);
+
+    return res.status(500).json({
+      status: 'error',
+      message: 'Database connection failed.'
+    });
+  }
+});
+
+// Get travel destinations
 app.get('/api/destinations', async (req, res) => {
   try {
     const result = await pool.query(`
@@ -84,12 +121,12 @@ app.get('/api/destinations', async (req, res) => {
 
     return res.status(500).json({
       status: 'error',
-      message: 'Failed to fetch destinations.'
+      message: 'Failed to load destinations.'
     });
   }
 });
 
-// Signup
+// Sign up
 app.post('/api/auth/signup', async (req, res) => {
   try {
     const { name, email, password } = req.body || {};
@@ -100,28 +137,38 @@ app.post('/api/auth/signup', async (req, res) => {
       typeof password !== 'string' ||
       !name.trim() ||
       !email.trim() ||
-      !password
+      password.length < 8
     ) {
       return res.status(400).json({
         status: 'error',
-        message: 'Name, email and password are required.'
+        message: 'Provide a name, email and password of at least 8 characters.'
       });
     }
 
-    const normalizedName = name.trim();
-    const normalizedEmail = email.trim().toLowerCase();
+    const cleanName = name.trim();
+    const cleanEmail = email.trim().toLowerCase();
 
-    if (normalizedName.length > 100 || normalizedEmail.length > 255) {
+    if (
+      cleanName.length > 100 ||
+      cleanEmail.length > 255 ||
+      password.length > 128 ||
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)
+    ) {
       return res.status(400).json({
         status: 'error',
-        message: 'Name or email is too long.'
+        message: 'Please enter valid account details.'
       });
     }
 
-    if (password.length < 8 || Buffer.byteLength(password, 'utf8') > 72) {
-      return res.status(400).json({
+    const existingUser = await pool.query(
+      'SELECT id FROM users WHERE LOWER(email) = $1',
+      [cleanEmail]
+    );
+
+    if (existingUser.rows.length > 0) {
+      return res.status(409).json({
         status: 'error',
-        message: 'Password must be at least 8 characters and no more than 72 bytes.'
+        message: 'An account with this email already exists.'
       });
     }
 
@@ -130,18 +177,19 @@ app.post('/api/auth/signup', async (req, res) => {
     const result = await pool.query(
       `INSERT INTO users (name, email, password_hash)
        VALUES ($1, $2, $3)
-       RETURNING id, name, email, created_at`,
-      [normalizedName, normalizedEmail, passwordHash]
+       RETURNING id, name, email`,
+      [cleanName, cleanEmail, passwordHash]
     );
 
     const user = result.rows[0];
 
-    req.session.regenerate((sessionError) => {
-      if (sessionError) {
-        console.error('Signup session error:', sessionError);
+    req.session.regenerate((error) => {
+      if (error) {
+        console.error('Session regeneration error:', error);
+
         return res.status(500).json({
           status: 'error',
-          message: 'Account created, but session could not start. Please log in.'
+          message: 'Account created, but login failed. Please log in.'
         });
       }
 
@@ -149,29 +197,30 @@ app.post('/api/auth/signup', async (req, res) => {
 
       req.session.save((saveError) => {
         if (saveError) {
-          console.error('Signup session save error:', saveError);
+          console.error('Session save error:', saveError);
+
           return res.status(500).json({
             status: 'error',
-            message: 'Account created, but session could not be saved. Please log in.'
+            message: 'Account created, but session could not be saved.'
           });
         }
 
         return res.status(201).json({
           status: 'success',
-          message: 'Account created successfully.',
+          message: 'Account created successfully!',
           user
         });
       });
     });
   } catch (error) {
+    console.error('Signup error:', error.message);
+
     if (error.code === '23505') {
       return res.status(409).json({
         status: 'error',
         message: 'An account with this email already exists.'
       });
     }
-
-    console.error('Signup error:', error.message);
 
     return res.status(500).json({
       status: 'error',
@@ -198,27 +247,40 @@ app.post('/api/auth/login', async (req, res) => {
     }
 
     const result = await pool.query(
-      `SELECT id, name, email, password_hash, created_at
+      `SELECT id, name, email, password_hash
        FROM users
-       WHERE email = $1`,
+       WHERE LOWER(email) = $1`,
       [email.trim().toLowerCase()]
     );
 
-    const user = result.rows[0];
-
-    if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+    if (result.rows.length === 0) {
       return res.status(401).json({
         status: 'error',
         message: 'Invalid email or password.'
       });
     }
 
-    req.session.regenerate((sessionError) => {
-      if (sessionError) {
-        console.error('Login session error:', sessionError);
+    const user = result.rows[0];
+
+    const passwordMatches = await bcrypt.compare(
+      password,
+      user.password_hash
+    );
+
+    if (!passwordMatches) {
+      return res.status(401).json({
+        status: 'error',
+        message: 'Invalid email or password.'
+      });
+    }
+
+    req.session.regenerate((error) => {
+      if (error) {
+        console.error('Session regeneration error:', error);
+
         return res.status(500).json({
           status: 'error',
-          message: 'Unable to start session.'
+          message: 'Unable to start login session.'
         });
       }
 
@@ -226,21 +288,21 @@ app.post('/api/auth/login', async (req, res) => {
 
       req.session.save((saveError) => {
         if (saveError) {
-          console.error('Login session save error:', saveError);
+          console.error('Session save error:', saveError);
+
           return res.status(500).json({
             status: 'error',
-            message: 'Unable to save session.'
+            message: 'Unable to save login session.'
           });
         }
 
         return res.json({
           status: 'success',
-          message: 'Login successful.',
+          message: 'Login successful!',
           user: {
             id: user.id,
             name: user.name,
-            email: user.email,
-            created_at: user.created_at
+            email: user.email
           }
         });
       });
@@ -250,32 +312,30 @@ app.post('/api/auth/login', async (req, res) => {
 
     return res.status(500).json({
       status: 'error',
-      message: 'Unable to log in.'
+      message: 'Login failed.'
     });
   }
 });
 
 // Check current logged-in user
 app.get('/api/auth/me', async (req, res) => {
-  try {
-    if (!req.session.userId) {
-      return res.status(401).json({
-        status: 'error',
-        message: 'You are not logged in.'
-      });
-    }
+  if (!req.session.userId) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'You are not logged in.'
+    });
+  }
 
+  try {
     const result = await pool.query(
-      `SELECT id, name, email, created_at
-       FROM users
-       WHERE id = $1`,
+      'SELECT id, name, email FROM users WHERE id = $1',
       [req.session.userId]
     );
 
     if (result.rows.length === 0) {
       return res.status(401).json({
         status: 'error',
-        message: 'User account not found.'
+        message: 'User not found.'
       });
     }
 
@@ -288,7 +348,7 @@ app.get('/api/auth/me', async (req, res) => {
 
     return res.status(500).json({
       status: 'error',
-      message: 'Unable to check session.'
+      message: 'Unable to verify session.'
     });
   }
 });
@@ -297,19 +357,19 @@ app.get('/api/auth/me', async (req, res) => {
 app.post('/api/auth/logout', (req, res) => {
   req.session.destroy((error) => {
     if (error) {
-      console.error('Logout error:', error.message);
+      console.error('Logout error:', error);
 
       return res.status(500).json({
         status: 'error',
-        message: 'Unable to log out.'
+        message: 'Logout failed.'
       });
     }
 
     res.clearCookie('wanderly.sid', {
-      path: '/',
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
+      path: '/'
     });
 
     return res.json({
@@ -319,29 +379,7 @@ app.post('/api/auth/logout', (req, res) => {
   });
 });
 
-// Database test
-app.get('/api/db-test', async (req, res) => {
-  try {
-    const result = await pool.query(
-      'SELECT NOW() AS database_time'
-    );
-
-    return res.json({
-      status: 'success',
-      message: 'Successfully connected to the Wanderly database!',
-      databaseTime: result.rows[0].database_time
-    });
-  } catch (error) {
-    console.error('Database error:', error.message);
-
-    return res.status(500).json({
-      status: 'error',
-      message: 'Database connection failed.'
-    });
-  }
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`Wanderly API running at http://localhost:${PORT}`);
+// Start the Express server
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Wanderly API running on port ${PORT}`);
 });
