@@ -1,0 +1,19 @@
+
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS destinations (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(150) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    description TEXT,
+    image_url TEXT,
+    price NUMERIC(10, 2) NOT NULL DEFAULT 0,
+    duration VARCHAR(100),
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
