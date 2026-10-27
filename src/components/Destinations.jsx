@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import DestinationCard from './DestinationCard'
 
@@ -12,7 +12,7 @@ function Destinations() {
     const fetchDestinations = async () => {
       try {
         const response = await fetch(
-          'http://localhost:5000/api/destinations',
+          `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/destinations`,
         )
 
         if (!response.ok) {
@@ -113,3 +113,4 @@ function Destinations() {
 }
 
 export default Destinations
+

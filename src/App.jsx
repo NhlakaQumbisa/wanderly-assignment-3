@@ -1,4 +1,4 @@
-
+﻿
 import { useEffect, useState } from 'react'
 import Header from './components/Header'
 import Hero from './components/Hero'
@@ -6,7 +6,7 @@ import Destinations from './components/Destinations'
 import Footer from './components/Footer'
 import AuthModal from './components/AuthModal'
 
-const API_URL = 'http://localhost:5000'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
 function App() {
   const [user, setUser] = useState(null)
@@ -103,3 +103,4 @@ function App() {
 }
 
 export default App
+
